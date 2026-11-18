@@ -1,0 +1,102 @@
+{
+  "row_grain": "one row per (trip_id, obs_index, arc_id) candidate",
+  "order": "trips sorted by directory name; observations in input time order; candidates nearest-to-farthest within each observation",
+  "interface_columns": [
+    "point",
+    "arc",
+    "t_proj"
+  ],
+  "internal_identity_columns": [
+    "trip_id",
+    "obs_index",
+    "arc_id"
+  ],
+  "model_input_columns": [
+    "cross_track_m",
+    "gps_step_m",
+    "next_gps_step_m",
+    "time_gap_s",
+    "gps_speed_mps",
+    "arc_length_m",
+    "projection_fraction",
+    "heading_cos",
+    "heading_sin",
+    "prev_heading_cos",
+    "next_heading_cos",
+    "prev_heading_available",
+    "next_heading_available",
+    "from_degree",
+    "to_degree"
+  ],
+  "feature_definitions": {
+    "cross_track_m": "Metric distance from the GPS observation to the directed candidate arc.",
+    "gps_step_m": "Projected straight-line distance from the previous valid GPS observation to this observation; zero for the first observation.",
+    "next_gps_step_m": "Projected straight-line distance from this observation to the next valid GPS observation; zero for the final observation.",
+    "time_gap_s": "Positive timestamp difference from the previous valid observation; zero when unavailable or non-positive.",
+    "gps_speed_mps": "gps_step_m divided by time_gap_s; zero when the previous step has no positive time gap.",
+    "arc_length_m": "Projected straight-line length between the candidate arc's from-node and to-node.",
+    "projection_fraction": "Closest-point fraction along the directed arc, clamped to [0, 1]; 0 is the from-node and 1 is the to-node.",
+    "heading_cos": "Cosine of the wrapped angle from candidate-arc bearing to the incoming GPS heading.",
+    "heading_sin": "Sine of the wrapped angle from candidate-arc bearing to the incoming GPS heading.",
+    "prev_heading_cos": "Same value as heading_cos in the current implementation; retained for compatibility with Person 1 baseline models.",
+    "next_heading_cos": "Cosine of the wrapped angle from candidate-arc bearing to the outgoing GPS heading.",
+    "prev_heading_available": "1 when a previous observation and positive timestamp gap provide an incoming heading; otherwise 0.",
+    "next_heading_available": "1 when a next observation and positive timestamp gap provide an outgoing heading; otherwise 0.",
+    "from_degree": "Directed out-degree of the candidate arc's from-node.",
+    "to_degree": "Directed in-degree of the candidate arc's to-node."
+  },
+  "target_column": "is_target",
+  "target_format": "boolean; True iff this candidate arc equals the route-to-GPS aligned target arc",
+  "label_columns": [
+    "target_arc_id",
+    "label_available",
+    "is_target",
+    "candidate_miss"
+  ],
+  "candidate_miss_handling": "Keep missed observations in validation to report candidate miss rate; exclude all candidate rows from missed observations during model fitting.",
+  "candidate_settings": {
+    "radius_m": 60.0,
+    "max_candidates": 12,
+    "nearest_fallback": true
+  },
+  "alignment": "The ordered route arc sequence is spatially aligned to GPS observations with a soft route-progression penalty; it is not row-index matched.",
+  "inference": {
+    "load_route": false,
+    "candidate_feature_table_align_route": false,
+    "label_columns_present": false,
+    "model_input": "candidate_table[model_input_columns]",
+    "positive_probability": "predict_proba(X)[:, 1]",
+    "grouping_and_arc_mapping": [
+      "trip_id",
+      "obs_index",
+      "arc_id"
+    ]
+  },
+  "partition_use": {
+    "train": "fit and group-aware validation only",
+    "student_test": "development evaluation only; do not fit on it",
+    "evaluator_test": "not exported or read by this command"
+  },
+  "files": [
+    {
+      "partition": "train",
+      "trips_exported": 80,
+      "observations": 208417,
+      "candidate_rows": 1598287,
+      "candidate_miss_observations": 22860,
+      "candidate_miss_rate": 0.1096839509253084,
+      "file": "train_candidates.csv.gz",
+      "compressed_bytes": 82382280
+    },
+    {
+      "partition": "student_test",
+      "trips_exported": 10,
+      "observations": 19160,
+      "candidate_rows": 169278,
+      "candidate_miss_observations": 47,
+      "candidate_miss_rate": 0.002453027139874739,
+      "file": "student_test_candidates.csv.gz",
+      "compressed_bytes": 8756756
+    }
+  ]
+}

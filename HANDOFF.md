@@ -4,7 +4,7 @@
 
 ```python
 from pathsnap_person1.io import discover_trip_dirs, load_trip
-from pathsnap_person1.features import FEATURE_COLUMNS, candidate_feature_table
+from pathsnap_person1.features import FEATURES, candidate_feature_table
 
 trip = load_trip(trip_dir, partition="train", include_route=True)
 training_candidates = candidate_feature_table(trip, align_route=True)
@@ -13,14 +13,14 @@ inference_trip = load_trip(trip_dir, partition="evaluator_test")  # labels exclu
 inference_candidates = candidate_feature_table(inference_trip)  # align_route=False by default
 ```
 
-Each candidate table has one row for each GPS-observation/road-arc pair. Use `FEATURE_COLUMNS` as the model input. The trip loader excludes `.route` labels unless `include_route=True`; keep that default for evaluator inference and do not pass ground-truth fields to the UI. Use `include_route=True` plus `align_route=True` only for permitted train/student-test development labels. Keep the other fields as IDs and evaluation metadata:
+Each candidate table has one row for each GPS-observation/road-arc pair. Use `FEATURES` as the model input. The candidate table exposes the agreed `point`, `arc`, and `t_proj` fields directly, alongside internal `trip_id`, `obs_index`, and `arc_id` identifiers. Inference tables omit target-label columns. The trip loader excludes `.route` labels unless `include_route=True`; keep that default for evaluator inference and do not pass ground-truth fields to the UI. Use `include_route=True` plus `align_route=True` only for permitted train/student-test development labels. Keep identifiers out of the feature matrix.
 
 - `trip_id`, `partition`, `obs_index`, `source_track_row`;
 - `arc_id` for the candidate;
 - `target_arc_id`, `label_available`, `is_target`, `candidate_miss` for supervised development/evaluation;
 - `nearest_fallback` to identify observations with no road arc inside the configured radius.
 
-Model scores should be returned in the same row order as the input candidate table so the decoder can group by `(trip_id, obs_index)` and retain the `arc_id` mapping. The UI/API prediction path should not expose ground-truth fields.
+Model scores should be returned in the same row order as the input candidate table so the decoder can group by `(trip_id, point)` and retain the `arc` mapping. The UI/API prediction path should not expose ground-truth fields. See [INTERFACE.md](INTERFACE.md) for the complete agreed contract and output file links.
 
 Before tuning or drawing conclusions from grouped CV, review the candidate-coverage outliers in trips `00000054` and `00000033`: their aligned target arcs are far from GPS observations for many points. This may reflect reference-route limitations or route/trajectory mismatch; it is not automatically fixed by widening the candidate radius.
 
@@ -35,4 +35,4 @@ The initial student-test results were:
 | Logistic Regression | 0.741 ± 0.020 | 0.789 | 0.630 | 0.335 | 0.245% |
 | Random Forest | 0.875 ± 0.034 | 0.834 | 0.735 | 0.144 | 0.245% |
 
-The detailed EDA, fold metrics, timing, and route-label alignment caveats are in [PERSON1_RESULTS.md](PERSON1_RESULTS.md). These are two of the team's five required model experiments, not a final model selection.
+The actual candidate CSV exports and schema file for Shivanand are in `outputs/shivanand_handoff/`. The detailed EDA, fold metrics, timing, and route-label alignment caveats are in [PERSON1_RESULTS.md](PERSON1_RESULTS.md). These are two of the team's five required model experiments, not a final model selection.

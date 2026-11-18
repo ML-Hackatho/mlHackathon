@@ -23,6 +23,7 @@ dependencies = [
 pathsnap-eda = "pathsnap_person1.eda:main"
 pathsnap-train-baselines = "pathsnap_person1.training:main"
 pathsnap-candidate-coverage = "pathsnap_person1.coverage:main"
+pathsnap-export-candidates = "pathsnap_person1.export_candidates:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

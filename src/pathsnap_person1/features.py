@@ -31,6 +31,9 @@ FEATURE_COLUMNS = [
     "to_degree",
 ]
 
+# Alias used by Shreya's agreed interface contract.
+FEATURES = FEATURE_COLUMNS
+
 
 def _angle_difference(left: float, right: float) -> float:
     return (left - right + math.pi) % (2 * math.pi) - math.pi
@@ -162,7 +165,8 @@ def candidate_feature_table(
         index = build_road_index(trip)
     gps = index.projected_gps
     timestamps = trip.track[:, 2]
-    if align_route and trip.route is not None:
+    has_labels = bool(align_route and trip.route is not None and trip.route.size)
+    if has_labels:
         target_arc = align_route_to_observations(trip, index)
     else:
         target_arc = np.full(len(gps), -1, dtype=np.int64)
@@ -189,7 +193,9 @@ def candidate_feature_table(
             next_heading, next_distance = _direction(gps[obs_idx], gps[obs_idx + 1])
             next_dt = max(float(timestamps[obs_idx + 1] - timestamps[obs_idx]), 0.0)
         current_target = int(target_arc[obs_idx])
-        candidate_miss = current_target >= 0 and current_target not in set(candidate_ids.tolist())
+        candidate_miss = (
+            has_labels and current_target not in set(candidate_ids.tolist())
+        )
 
         for arc_id, cross_track in zip(candidate_ids, candidate_distances):
             arc_id = int(arc_id)
@@ -201,13 +207,12 @@ def candidate_feature_table(
                 {
                     "trip_id": trip.trip_id,
                     "partition": trip.partition,
+                    "point": int(obs_idx),
+                    "arc": arc_id,
+                    "t_proj": projection_fraction,
                     "obs_index": int(obs_idx),
                     "source_track_row": int(trip.track_source_index[obs_idx]),
                     "arc_id": arc_id,
-                    "target_arc_id": current_target,
-                    "label_available": current_target >= 0,
-                    "is_target": current_target >= 0 and arc_id == current_target,
-                    "candidate_miss": bool(candidate_miss),
                     "nearest_fallback": bool(float(cross_track) > radius_m),
                     "cross_track_m": float(cross_track),
                     "gps_step_m": prev_distance,
@@ -226,4 +231,13 @@ def candidate_feature_table(
                     "to_degree": float(index.to_degree[arc_id]),
                 }
             )
+            if has_labels:
+                rows[-1].update(
+                    {
+                        "target_arc_id": current_target,
+                        "label_available": True,
+                        "is_target": arc_id == current_target,
+                        "candidate_miss": bool(candidate_miss),
+                    }
+                )
     return pd.DataFrame(rows)

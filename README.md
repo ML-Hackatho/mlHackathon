@@ -64,7 +64,11 @@ The scripts fit only on `train/`, use `student_test/` for development comparison
 - `outputs/eda/trip_inventory.csv`, `summary.json`, and `eda_summary.png`;
 - `outputs/eda/map_<trip-id>.html` with observed GPS, nearby road candidates, and reference-route layers;
 - `outputs/eda/candidate_coverage_by_trip.csv` to identify trips where reference-route arcs are absent from generated candidates;
+- `outputs/shivanand_handoff/train_candidates.csv.gz` and `student_test_candidates.csv.gz` with actual labeled candidate rows;
+- `outputs/shivanand_handoff/candidate_schema.json` with the interface fields, exact feature order, definitions, target format, and export counts;
 - `outputs/baselines/baseline_cv_folds.csv`, `baseline_student_test_results.csv`, and `baseline_comparison.png`;
 - `outputs/baselines/models/` with model artifacts and hyperparameter metadata.
+
+The team-facing contract that maps the agreed `point`/`arc`/`t_proj` schema to this implementation is in [INTERFACE.md](INTERFACE.md). To regenerate the candidate exports, run `pathsnap-export-candidates --data-root "C:\path\to\extracted\Student folder" --out outputs\shivanand_handoff`.
 
 All reported scores and figures come from actual runs. Evaluator data was not used.
