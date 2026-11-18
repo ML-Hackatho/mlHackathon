@@ -1,0 +1,4 @@
+[console_scripts]
+pathsnap-candidate-coverage = pathsnap_person1.coverage:main
+pathsnap-eda = pathsnap_person1.eda:main
+pathsnap-train-baselines = pathsnap_person1.training:main

@@ -1,0 +1,56 @@
+{
+  "model_name": "logistic_regression",
+  "feature_columns": [
+    "cross_track_m",
+    "gps_step_m",
+    "next_gps_step_m",
+    "time_gap_s",
+    "gps_speed_mps",
+    "arc_length_m",
+    "projection_fraction",
+    "heading_cos",
+    "heading_sin",
+    "prev_heading_cos",
+    "next_heading_cos",
+    "prev_heading_available",
+    "next_heading_available",
+    "from_degree",
+    "to_degree"
+  ],
+  "training_trip_count": 80,
+  "training_candidate_rows": 1522804,
+  "candidate_miss_training_observations_excluded": 22860,
+  "artifact": "logistic_regression.joblib",
+  "random_seed": 42,
+  "parameters": {
+    "steps": {
+      "scale": {
+        "estimator": "StandardScaler",
+        "parameters": {
+          "copy": true,
+          "with_mean": true,
+          "with_std": true
+        }
+      },
+      "model": {
+        "estimator": "LogisticRegression",
+        "parameters": {
+          "C": 1.0,
+          "class_weight": "balanced",
+          "dual": false,
+          "fit_intercept": true,
+          "intercept_scaling": 1,
+          "l1_ratio": 0.0,
+          "max_iter": 500,
+          "n_jobs": null,
+          "penalty": "deprecated",
+          "random_state": 42,
+          "solver": "lbfgs",
+          "tol": 0.0001,
+          "verbose": 0,
+          "warm_start": false
+        }
+      }
+    }
+  }
+}

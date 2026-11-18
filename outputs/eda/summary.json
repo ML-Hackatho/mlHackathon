@@ -1,0 +1,69 @@
+{
+  "partitions": {
+    "student_test": {
+      "trips": 10,
+      "load_errors": 0,
+      "gps_observations_total": 19160,
+      "gps_observations_per_trip_median": 1420.0,
+      "gps_observations_per_trip_min": 262,
+      "gps_observations_per_trip_max": 3958,
+      "invalid_or_impossible_gps_rows": 0,
+      "timestamp_nonincreasing_steps": 0,
+      "timestamp_non_1s_steps": 264,
+      "timestamp_steps_total": 19150,
+      "timestamp_exactly_1s_percent": 98.621,
+      "road_nodes_total": 90689,
+      "road_arcs_total": 185041,
+      "road_components_per_trip_median": 11.0,
+      "road_components_per_trip_max": 100,
+      "isolated_road_nodes_total": 0,
+      "trips_with_reference_route": 10,
+      "longitude_extent": [
+        -93.424337,
+        77.271115
+      ],
+      "latitude_extent": [
+        42.645529,
+        61.69959
+      ],
+      "trip_level_max_gap_median_s": 2.0,
+      "trip_level_max_gap_max_s": 210.0
+    },
+    "train": {
+      "trips": 80,
+      "load_errors": 0,
+      "gps_observations_total": 208417,
+      "gps_observations_per_trip_median": 1529.0,
+      "gps_observations_per_trip_min": 361,
+      "gps_observations_per_trip_max": 19313,
+      "invalid_or_impossible_gps_rows": 0,
+      "timestamp_nonincreasing_steps": 0,
+      "timestamp_non_1s_steps": 7284,
+      "timestamp_steps_total": 208337,
+      "timestamp_exactly_1s_percent": 96.504,
+      "road_nodes_total": 1933485,
+      "road_arcs_total": 3876904,
+      "road_components_per_trip_median": 20.0,
+      "road_components_per_trip_max": 421,
+      "isolated_road_nodes_total": 0,
+      "trips_with_reference_route": 80,
+      "longitude_extent": [
+        -100.418538,
+        137.237029
+      ],
+      "latitude_extent": [
+        -34.640291,
+        61.267258
+      ],
+      "trip_level_max_gap_median_s": 11.0,
+      "trip_level_max_gap_max_s": 153064.0
+    }
+  },
+  "inventory_csv": "trip_inventory.csv",
+  "method_notes": [
+    "Coordinates are read as longitude, latitude and projected per trip to metric AEQD coordinates for distance calculations.",
+    "Road connectivity components are counted on an undirected view of directed arcs.",
+    "GPS timestamps are analyzed in input order; non-increasing steps are reported separately.",
+    "The route file is an ordered arc sequence and is not assumed to align row-for-row with GPS observations."
+  ]
+}
