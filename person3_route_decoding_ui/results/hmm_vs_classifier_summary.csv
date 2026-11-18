@@ -1,0 +1,17 @@
+,mean
+points,1916.0
+gps_gaps_over_5s,4.4
+chain_breaks,0.2
+accuracy_classifier,0.8494915639566634
+accuracy_hmm,0.9028009671541174
+continuity_classifier,0.7440673080920333
+continuity_hmm,0.9134393898055814
+route_f1_classifier,0.8513202651037233
+route_f1_hmm,0.9694082686648959
+route_f1_hmm_without_gap_fill,0.9348667084048273
+route_len_f1_hmm,0.9882076760153471
+near_gap_points,25.2
+near_gap_acc_classifier,0.6923423423423423
+near_gap_acc_hmm,0.8027027027027027
+viterbi_ms,462.3077154159546
+total_ms,1182.419228553772

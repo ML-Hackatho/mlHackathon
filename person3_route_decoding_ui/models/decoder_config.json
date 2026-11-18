@@ -1,0 +1,11 @@
+{
+  "model_name": "mlp",
+  "selected_by": "Optuna TPE, 30 trials, objective = mean decoded accuracy on 80 training trips using OOF probabilities",
+  "hmm": {
+    "beta": 1.832164973518835,
+    "w_emit": 1.0,
+    "back_tol": 3.18225920818469,
+    "sp_limit": 3000.0,
+    "min_prob": 0.0001
+  }
+}

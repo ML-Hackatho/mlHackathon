@@ -1,0 +1,37 @@
+{
+  "model": "MLP",
+  "family": "Neural network",
+  "config": {
+    "hidden_layer_sizes": [
+      64,
+      32
+    ],
+    "activation": "relu",
+    "solver": "adam",
+    "alpha": 0.0001,
+    "learning_rate_init": 0.001,
+    "batch_size": 512,
+    "max_iter": 60,
+    "early_stopping": true,
+    "validation_fraction": 0.1,
+    "n_iter_no_change": 6,
+    "random_state": 42
+  },
+  "loss": "binary cross-entropy (log loss) + L2 penalty alpha, optimised with Adam",
+  "cv_macro_f1_mean": 0.8743705393937973,
+  "cv_macro_f1_std": 0.023944101293525845,
+  "cv_top1_mean": 0.7360907179176077,
+  "cv_top1_std": 0.1324692392058134,
+  "cv_log_loss_mean": 0.12779717003425953,
+  "train_macro_f1_mean": 0.8839810318101822,
+  "train_top1_mean": 0.8249914611871351,
+  "test_macro_precision": 0.9066034325494031,
+  "test_macro_recall": 0.8744604599462121,
+  "test_macro_f1": 0.889634917372891,
+  "test_log_loss": 0.11180298030376434,
+  "test_top1": 0.8279749478079332,
+  "test_route_continuity_classifier_only": 0.7440673080920333,
+  "fit_seconds_full": 24.818508863449097,
+  "epochs_full": 41,
+  "inference_ms_per_1000_points": 2.9055211140865573
+}

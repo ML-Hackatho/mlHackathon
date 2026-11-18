@@ -1,0 +1,29 @@
+00000000: acc 0.933->0.960  cont 0.654->0.939  routeF1 0.859->0.952  breaks 2
+00000007: acc 0.897->0.891  cont 0.985->1.000  routeF1 0.972->0.988  breaks 0
+00000009: acc 0.810->0.865  cont 0.712->0.849  routeF1 0.819->0.955  breaks 0
+00000040: acc 0.914->0.952  cont 0.803->0.973  routeF1 0.893->0.992  breaks 0
+00000052: acc 0.950->0.973  cont 0.825->0.877  routeF1 0.852->0.989  breaks 0
+00000056: acc 0.844->0.904  cont 0.690->0.902  routeF1 0.896->0.982  breaks 0
+00000065: acc 0.823->0.932  cont 0.654->0.923  routeF1 0.813->0.993  breaks 0
+00000076: acc 0.851->0.908  cont 0.646->0.872  routeF1 0.795->0.926  breaks 0
+00000077: acc 0.644->0.753  cont 0.773->0.933  routeF1 0.796->0.934  breaks 0
+00000091: acc 0.828->0.889  cont 0.698->0.868  routeF1 0.820->0.983  breaks 0
+points                           1916.0000
+gps_gaps_over_5s                    4.4000
+chain_breaks                        0.2000
+accuracy_classifier                 0.8495
+accuracy_hmm                        0.9028
+continuity_classifier               0.7441
+continuity_hmm                      0.9134
+route_f1_classifier                 0.8513
+route_f1_hmm                        0.9694
+route_f1_hmm_without_gap_fill       0.9349
+route_len_f1_hmm                    0.9882
+near_gap_points                    25.2000
+near_gap_acc_classifier             0.6923
+near_gap_acc_hmm                    0.8027
+viterbi_ms                        462.3077
+total_ms                         1182.4192
+                      decoder   beta  w_emit  back_tol  sp_limit  min_prob  student_test_accuracy  student_test_continuity  student_test_route_f1  viterbi_ms_per_trip
+untuned (beta=8, back_tol=12) 8.0000     1.0   12.0000    3000.0    0.0001                 0.8973                   0.9178                 0.9627             466.1248
+               Bayesian-tuned 1.8322     1.0    3.1823    3000.0    0.0001                 0.9028                   0.9134                 0.9694             497.3607

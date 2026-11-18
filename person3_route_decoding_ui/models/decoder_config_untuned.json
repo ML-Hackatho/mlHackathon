@@ -1,0 +1,10 @@
+{
+  "model_name": "mlp",
+  "hmm": {
+    "beta": 8.0,
+    "w_emit": 1.0,
+    "back_tol": 12.0,
+    "sp_limit": 3000.0,
+    "min_prob": 0.0001
+  }
+}

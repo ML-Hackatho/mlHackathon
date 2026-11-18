@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PathSnap - Evaluator Console</title>
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<script src="vendor/leaflet/leaflet.js"></script>
+<style>
+  :root { --bg:#0f1720; --panel:#16212c; --line:#26343f; --text:#e6edf3; --muted:#8aa0b2;
+          --accent:#ff5a36; --gps:#3b9dff; --ok:#3ecf8e; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: "Segoe UI", system-ui, sans-serif; background:var(--bg); color:var(--text);
+         display:grid; grid-template-columns: 340px 1fr; height:100vh; }
+  aside { background:var(--panel); border-right:1px solid var(--line); padding:18px; overflow-y:auto; }
+  h1 { font-size:20px; margin:0 0 2px; letter-spacing:.5px; }
+  h1 span { color:var(--accent); }
+  .sub { color:var(--muted); font-size:12px; margin-bottom:16px; }
+  aside label { display:block; font-size:11px; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); margin:14px 0 6px; }
+  aside input, aside select, aside button { width:100%; padding:9px 10px; border-radius:6px; border:1px solid var(--line);
+         background:#0d141b; color:var(--text); font-size:14px; }
+  .row { display:flex; gap:8px; } .row > * { flex:1; }
+  aside button { background:var(--accent); border:none; font-weight:600; cursor:pointer; margin-top:12px; }
+  aside button.secondary { background:#24323d; }
+  aside button:disabled { opacity:.5; cursor:wait; }
+  #trips { display:grid; grid-template-columns: repeat(2, 1fr); gap:6px; }
+  #trips button { margin:0; background:#0d141b; border:1px solid var(--line); font-weight:500; font-family:monospace; }
+  #trips button.active { border-color:var(--accent); color:var(--accent); }
+  .status { font-size:12px; margin-top:10px; min-height:16px; color:var(--muted); }
+  .status.err { color:#ff6b6b; } .status.ok { color:var(--ok); }
+  .cards { display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:14px; }
+  .card { background:#0d141b; border:1px solid var(--line); border-radius:8px; padding:10px; }
+  .card .v { font-size:20px; font-weight:700; } .card .k { font-size:11px; color:var(--muted); }
+  .card.big { grid-column: span 2; } .card.big .v { font-size:30px; color:var(--ok); }
+  table { width:100%; font-size:12px; border-collapse:collapse; margin-top:10px; }
+  td { padding:4px 0; border-bottom:1px solid var(--line); } td:last-child { text-align:right; font-family:monospace; }
+  #map { height:100vh; }
+  .legend { background:rgba(22,33,44,.92); color:var(--text); padding:8px 10px; border-radius:6px; font-size:12px; line-height:20px; }
+  .legend i { display:inline-block; width:18px; height:4px; margin-right:6px; vertical-align:middle; }
+  .legend i.dot { width:9px; height:9px; border-radius:50%; }
+</style>
+</head>
+<body>
+<aside>
+  <h1>Path<span>Snap</span></h1>
+  <div class="sub">Evaluator console - map-matching &amp; route reconstruction</div>
+
+  <label>API server (Laptop 1)</label>
+  <div class="row">
+    <input id="api" value="http://localhost:8000">
+  </div>
+  <button class="secondary" id="connect">Connect &amp; load trips</button>
+  <div class="status" id="connStatus"></div>
+
+  <label>Evaluation trips</label>
+  <div id="trips"></div>
+
+  <button id="run" disabled>Run prediction</button>
+  <div class="status" id="runStatus"></div>
+
+  <div id="results"></div>
+</aside>
+<div id="map"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+let selectedTrip = null;
+
+// remember API url (browser storage may be unavailable; ignore errors)
+try { const s = localStorage.getItem("pathsnap_api"); if (s) $("api").value = s; } catch (e) {}
+
+const map = L.map("map", { preferCanvas: true }).setView([52.95, -1.15], 12);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "&copy; OpenStreetMap contributors", maxZoom: 19 }).addTo(map);
+const layers = { network: L.layerGroup(), gps: L.layerGroup(), route: L.layerGroup(), ends: L.layerGroup() };
+Object.values(layers).forEach(l => l.addTo(map));
+L.control.layers(null, {
+  "Road network (nearby)": layers.network, "GPS observations": layers.gps,
+  "Predicted route (HMM/Viterbi)": layers.route, "Start / end": layers.ends }, { collapsed: false }).addTo(map);
+const legend = L.control({ position: "bottomright" });
+legend.onAdd = () => { const d = L.DomUtil.create("div", "legend");
+  d.innerHTML = '<i class="dot" style="background:#3b9dff"></i>GPS observation<br>' +
+                '<i style="background:#ff5a36"></i>Predicted route<br>' +
+                '<i style="background:#b8c2cc"></i>Road network<br>' +
+                '<i class="dot" style="background:#2ca02c"></i>Start &nbsp;<i class="dot" style="background:#111"></i>End';
+  return d; };
+legend.addTo(map);
+
+function api() { return $("api").value.replace(/\/+$/, ""); }
+function setStatus(el, msg, cls) { el.textContent = msg; el.className = "status " + (cls || ""); }
+
+$("connect").onclick = async () => {
+  try { localStorage.setItem("pathsnap_api", $("api").value); } catch (e) {}
+  setStatus($("connStatus"), "Connecting...");
+  try {
+    const h = await (await fetch(api() + "/health")).json();
+    const r = await (await fetch(api() + "/trips")).json();
+    $("trips").innerHTML = "";
+    r.trips.forEach(t => {
+      const b = document.createElement("button"); b.textContent = t;
+      b.onclick = () => { selectedTrip = t; document.querySelectorAll("#trips button").forEach(x => x.classList.remove("active"));
+                          b.classList.add("active"); $("run").disabled = false; };
+      $("trips").appendChild(b);
+    });
+    setStatus($("connStatus"), `Connected - model: ${h.model} - ${r.trips.length} trips`, "ok");
+  } catch (e) { setStatus($("connStatus"), "Could not reach API: " + e.message, "err"); }
+};
+
+$("run").onclick = async () => {
+  if (!selectedTrip) return;
+  $("run").disabled = true;
+  setStatus($("runStatus"), `Sending trip ${selectedTrip} to API...`);
+  const t0 = performance.now();
+  try {
+    const resp = await fetch(api() + "/predict", { method: "POST",
+      headers: { "Content-Type": "application/json" }, body: JSON.stringify({ trip_id: selectedTrip }) });
+    if (!resp.ok) throw new Error((await resp.text()) || resp.status);
+    const out = await resp.json();
+    draw(out);
+    showResults(out, performance.now() - t0);
+    setStatus($("runStatus"), `Trip ${out.trip_id} matched`, "ok");
+  } catch (e) { setStatus($("runStatus"), "Prediction failed: " + e.message, "err"); }
+  $("run").disabled = false;
+};
+
+function draw(out) {
+  Object.values(layers).forEach(l => l.clearLayers());
+  (out.network_segments || []).forEach(s => L.polyline(s, { color: "#b8c2cc", weight: 2, opacity: .7 }).addTo(layers.network));
+  const step = Math.max(1, Math.floor(out.gps.length / 3000));        // thin very long tracks for display
+  out.gps.forEach((p, i) => { if (i % step === 0)
+    L.circleMarker(p, { radius: 2.5, color: "#3b9dff", weight: 0, fillOpacity: .8 }).addTo(layers.gps); });
+  const route = L.polyline(out.predicted_route_coords, { color: "#ff5a36", weight: 5, opacity: .85 }).addTo(layers.route);
+  if (out.gps.length) {
+    L.circleMarker(out.gps[0], { radius: 7, color: "#fff", fillColor: "#2ca02c", fillOpacity: 1 }).bindTooltip("Start").addTo(layers.ends);
+    L.circleMarker(out.gps[out.gps.length - 1], { radius: 7, color: "#fff", fillColor: "#111", fillOpacity: 1 }).bindTooltip("End").addTo(layers.ends);
+  }
+  const b = L.latLngBounds(out.gps.length ? out.gps : out.predicted_route_coords);
+  map.fitBounds(b.pad(0.08));
+}
+
+const pct = x => (x == null ? "n/a" : (100 * x).toFixed(2) + "%");
+function showResults(out, rtt) {
+  const e = out.evaluation || {}, d = out.decoder || {}, t = out.timing_ms || {};
+  $("results").innerHTML = `
+    <div class="cards">
+      <div class="card big"><div class="k">Observation-level accuracy (HMM)</div><div class="v">${pct(e.accuracy_hmm)}</div></div>
+      <div class="card"><div class="k">Classifier-only accuracy</div><div class="v">${pct(e.accuracy_classifier_only)}</div></div>
+      <div class="card"><div class="k">Route F1</div><div class="v">${pct(e.route_f1)}</div></div>
+      <div class="card"><div class="k">Route continuity</div><div class="v">${pct(d.route_continuity_hmm)}</div></div>
+      <div class="card"><div class="k">Server time</div><div class="v">${(t.total / 1000).toFixed(2)} s</div></div>
+    </div>
+    <table>
+      <tr><td>Trip</td><td>${out.trip_id}</td></tr>
+      <tr><td>Model</td><td>${out.model}</td></tr>
+      <tr><td>GPS points</td><td>${out.n_points}</td></tr>
+      <tr><td>Points scored</td><td>${e.points_scored ?? "n/a"}</td></tr>
+      <tr><td>Route precision / recall</td><td>${pct(e.route_precision)} / ${pct(e.route_recall)}</td></tr>
+      <tr><td>Length-weighted route F1</td><td>${pct(e.route_length_f1)}</td></tr>
+      <tr><td>Continuity (classifier only)</td><td>${pct(d.route_continuity_classifier_only)}</td></tr>
+      <tr><td>GPS gaps &gt; 5 s</td><td>${d.gps_gaps_over_5s}</td></tr>
+      <tr><td>Viterbi chain breaks</td><td>${d.chain_breaks}</td></tr>
+      <tr><td>Predicted route arcs</td><td>${out.predicted_route_arcs.length}</td></tr>
+      <tr><td>Features / classifier / Viterbi</td><td>${t.features.toFixed(0)} / ${t.classifier.toFixed(0)} / ${t.viterbi.toFixed(0)} ms</td></tr>
+      <tr><td>Round trip (incl. network)</td><td>${(rtt / 1000).toFixed(2)} s</td></tr>
+    </table>`;
+}
+</script>
+</body>
+</html>
