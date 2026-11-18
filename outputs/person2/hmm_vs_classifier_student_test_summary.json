@@ -1,0 +1,23 @@
+{
+  "points": 1916.0,
+  "accuracy_classifier_only": 0.8578551996271783,
+  "accuracy_hmm": 0.9033320566882773,
+  "continuity_classifier_only": 0.7587066910956991,
+  "continuity_hmm": 0.9162118351166335,
+  "route_f1_classifier_only": 0.8606147871262045,
+  "route_f1_hmm": 0.9703481277107026,
+  "route_length_f1_hmm": 0.9878800147946398,
+  "chain_breaks": 0.2,
+  "gps_gaps_over_5s": 4.4,
+  "features_ms": 910.7630299993616,
+  "classifier_ms": 42.5062500002241,
+  "viterbi_ms": 576.4807999999903,
+  "total_ms": 1529.750079999576,
+  "eval_points_scored": 1916.0,
+  "eval_accuracy_hmm": 0.9033320566882773,
+  "eval_accuracy_classifier_only": 0.8578551996271783,
+  "eval_route_precision": 0.9488009036275141,
+  "eval_route_recall": 0.994068866683306,
+  "eval_route_f1": 0.9703481277107026,
+  "eval_route_length_f1": 0.9878800147946398
+}

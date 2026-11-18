@@ -1,0 +1,10 @@
+{
+  "file": "oof_xgboost.npy",
+  "model_name": "xgboost",
+  "candidate_csv": "C:\\Users\\Lenovo\\Documents\\PES\\sem5\\ml\\hack\\pathsnap_person1\\outputs\\shivanand_handoff\\train_candidates.csv.gz",
+  "row_count": 1598287,
+  "row_order": "exact row order of train_candidates.csv.gz after label_available filtering",
+  "folds": 5,
+  "group_column": "trip_id",
+  "candidate_miss_handling": "missed observation rows are predicted in held-out fold; excluded from fit"
+}

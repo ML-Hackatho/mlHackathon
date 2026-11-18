@@ -132,6 +132,8 @@ Laptop 1 serves the API; Laptop 2 hosts the UI. Enable CORS for Laptop 2's UI or
 
 The values above only describe the response schema; they are not performance results. Evaluation is computed server-side after `RoutePredictor.predict()` has run without opening `.route`. Never return the reference route, its geometry, or per-point labels. The `evaluation` object contains aggregate numbers only.
 
+Person 2's current implementation is in `src/pathsnap_person2/`. It loads the selected tuned model from `outputs/person2/models/final_model.joblib`, builds candidates with this Person 1 pipeline, calls the HMM/Viterbi adapter, and exposes `/health`, `/trips`, and `/predict`. Environment variables and run commands are documented in [PERSON2_INTEGRATION.md](PERSON2_INTEGRATION.md); model results and tuning settings are in [PERSON2_RESULTS.md](PERSON2_RESULTS.md).
+
 ## 8. Person 1 baseline reference
 
 Person 1 trained Logistic Regression and Random Forest using this 15-feature candidate schema. On student-test, Top-1 accuracy was 0.789 (Logistic Regression) and 0.834 (Random Forest); per-trip observation Macro F1 was 0.630 and 0.735. These are two of the team's five experiments, not final model selection. Full grouped-CV metrics and configurations are in `outputs/baselines/` and `PERSON1_RESULTS.md`.

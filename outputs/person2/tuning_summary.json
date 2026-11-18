@@ -1,0 +1,29 @@
+{
+  "selected_model_family": "xgboost",
+  "sampler": "Optuna TPESampler",
+  "seed": 42,
+  "objective": "mean per-trip observation-level Macro F1 over five GroupKFold folds (group=trip_id)",
+  "n_trials": 5,
+  "search_space": {
+    "n_estimators": "int [200, 500], step 100",
+    "max_depth": "int [3, 9]",
+    "learning_rate": "log-uniform [0.02, 0.15]",
+    "min_child_weight": "log-uniform [1, 20]",
+    "subsample": "uniform [0.7, 1.0]",
+    "colsample_bytree": "uniform [0.7, 1.0]",
+    "reg_lambda": "log-uniform [0.1, 10]",
+    "gamma": "uniform [0, 2]"
+  },
+  "best_value_cv_observation_macro_f1": 0.7068594688972144,
+  "best_params": {
+    "n_estimators": 200,
+    "max_depth": 9,
+    "learning_rate": 0.022364793265055968,
+    "min_child_weight": 3.115674027328961,
+    "subsample": 0.9350888863447051,
+    "colsample_bytree": 0.9531059621024348,
+    "reg_lambda": 5.037439075088674,
+    "gamma": 1.5806942678770741
+  },
+  "tuning_seconds": 701.4072560999994
+}

@@ -1,1 +1,2 @@
 pathsnap_person1
+pathsnap_person2

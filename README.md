@@ -1,6 +1,6 @@
-# PathSnap Person 1: data and feature pipeline
+# PathSnap: GPS Map Matching and Route Reconstruction
 
-This project contains Person 1's workstream:
+PathSnap reconstructs road routes from GPS trajectories by generating road candidates, ranking them with trained classifiers, and applying HMM/Viterbi route decoding. This repository contains the complete team implementation, experiments, API, and evaluator UI. Person 1's data and feature work includes:
 
 - per-trip readers for `.track`, `.nodes`, `.arcs`, and optional `.route` files;
 - dataset inventory and EDA outputs, including a Folium map;
@@ -67,8 +67,33 @@ The scripts fit only on `train/`, use `student_test/` for development comparison
 - `outputs/shivanand_handoff/train_candidates.csv.gz` and `student_test_candidates.csv.gz` with actual labeled candidate rows;
 - `outputs/shivanand_handoff/candidate_schema.json` with the interface fields, exact feature order, definitions, target format, and export counts;
 - `outputs/baselines/baseline_cv_folds.csv`, `baseline_student_test_results.csv`, and `baseline_comparison.png`;
-- `outputs/baselines/models/` with model artifacts and hyperparameter metadata.
+- `outputs/baselines/models/` with configuration metadata and available model artifacts. The 684 MB Random Forest joblib is excluded from GitHub due to the file-size limit; regenerate it with `pathsnap-train-baselines` when needed. The selected XGBoost and MLP artifacts are included in their respective model folders.
 
 The team-facing contract that maps the agreed `point`/`arc`/`t_proj` schema to this implementation is in [INTERFACE.md](INTERFACE.md). To regenerate the candidate exports, run `pathsnap-export-candidates --data-root "C:\path\to\extracted\Student folder" --out outputs\shivanand_handoff`.
 
 All reported scores and figures come from actual runs. Evaluator data was not used.
+
+## Person 2: LightGBM, XGBoost, tuning, and API
+
+Person 2's model workflow and current results are documented in [PERSON2_RESULTS.md](PERSON2_RESULTS.md). Reproduction steps and two-laptop API instructions are in [PERSON2_INTEGRATION.md](PERSON2_INTEGRATION.md). The implementation is under `src/pathsnap_person2/`; results and model artifacts are under `outputs/person2/`.
+
+Train and compare the boosted models from the shared candidate exports:
+
+```powershell
+python -m pathsnap_person2.training --candidate-dir outputs\shivanand_handoff --out outputs\person2 --folds 5 --trials 5
+```
+
+After training, export final-model OOF scores and retune/evaluate the decoder:
+
+```powershell
+python -m pathsnap_person2.oof --candidate-dir outputs\shivanand_handoff --out outputs\person2 --folds 5
+python -m pathsnap_person2.decoder_tuning --candidate-dir outputs\shivanand_handoff --data-root "data\Student folder" --out outputs\person2 --trials 30
+```
+
+## Hackathon deliverables
+
+- [Consolidated Technical Report (PDF)](reports/PathSnap_Technical_Report.pdf): dataset and EDA findings, 15-feature definitions, five-model comparison, XGBoost tuning, HMM/Viterbi evaluation, route map, API/UI evidence, and reproducibility notes.
+- [Person 1 results](PERSON1_RESULTS.md), [Person 2 results and API instructions](PERSON2_RESULTS.md), and [Person 2 integration guide](PERSON2_INTEGRATION.md).
+- `reports/technical_report_assets/` contains the Folium route map and the screenshots used as demo evidence. The report-generation analyses and combined comparison plots are in `reports/`.
+
+The API and UI were demonstrated together on two laptops: the API serves on port 8000 and the evaluator UI on port 5500. Follow [PERSON2_INTEGRATION.md](PERSON2_INTEGRATION.md) for the commands, CORS setting, and network setup.

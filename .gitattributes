@@ -1,0 +1,9 @@
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.joblib binary
+*.ubj binary
+*.npy binary
+*.db binary
+*.gz binary

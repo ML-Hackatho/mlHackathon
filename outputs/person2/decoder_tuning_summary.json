@@ -1,0 +1,24 @@
+{
+  "model_name": "xgboost",
+  "selected_by": "Optuna TPE on the selected model's five-fold trip-grouped OOF probabilities",
+  "objective": "mean decoded observation-level accuracy over 80 training trips",
+  "n_trials": 30,
+  "seed": 42,
+  "search_space": {
+    "beta_m": "log-uniform [0.5, 64]",
+    "back_tol_m": "uniform [0, 40]"
+  },
+  "w_emit": "fixed at 1.0; only the ratio relative to beta changes the path score",
+  "oof_probability_file": "oof_xgboost.npy",
+  "training_seconds": 2001.8793207999988,
+  "classifier_only_train_oof_accuracy": 0.8165429271577178,
+  "default_hmm_train_oof_accuracy": 0.8707730192558838,
+  "tuned_hmm_train_oof_accuracy": 0.8719440052028308,
+  "hmm": {
+    "beta": 5.3160981091846935,
+    "w_emit": 1.0,
+    "back_tol": 6.917857786532917,
+    "sp_limit": 3000.0,
+    "min_prob": 0.0001
+  }
+}

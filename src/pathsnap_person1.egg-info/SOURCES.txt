@@ -3,6 +3,7 @@ pyproject.toml
 src/pathsnap_person1/__init__.py
 src/pathsnap_person1/coverage.py
 src/pathsnap_person1/eda.py
+src/pathsnap_person1/export_candidates.py
 src/pathsnap_person1/features.py
 src/pathsnap_person1/geometry.py
 src/pathsnap_person1/io.py
@@ -14,3 +15,10 @@ src/pathsnap_person1.egg-info/dependency_links.txt
 src/pathsnap_person1.egg-info/entry_points.txt
 src/pathsnap_person1.egg-info/requires.txt
 src/pathsnap_person1.egg-info/top_level.txt
+src/pathsnap_person2/__init__.py
+src/pathsnap_person2/api.py
+src/pathsnap_person2/decoder.py
+src/pathsnap_person2/decoder_tuning.py
+src/pathsnap_person2/inference.py
+src/pathsnap_person2/oof.py
+src/pathsnap_person2/training.py

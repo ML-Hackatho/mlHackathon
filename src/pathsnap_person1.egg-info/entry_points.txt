@@ -1,4 +1,9 @@
 [console_scripts]
+pathsnap-api = pathsnap_person2.api:main
 pathsnap-candidate-coverage = pathsnap_person1.coverage:main
 pathsnap-eda = pathsnap_person1.eda:main
+pathsnap-export-candidates = pathsnap_person1.export_candidates:main
+pathsnap-export-oof = pathsnap_person2.oof:main
 pathsnap-train-baselines = pathsnap_person1.training:main
+pathsnap-train-person2 = pathsnap_person2.training:main
+pathsnap-tune-decoder = pathsnap_person2.decoder_tuning:main

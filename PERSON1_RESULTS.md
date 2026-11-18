@@ -57,4 +57,4 @@ Random Forest was stronger on these two baselines. The candidate-level Log Loss 
 
 Scoring time is only `predict_proba` over 169,278 student-test candidate rows; it excludes candidate generation and HMM/Viterbi decoding. Random Forest artifact size is about 718 MB, so do not commit it as the final artifact unless the team decides its size is acceptable. The trained models and configs are in `outputs/baselines/models/`.
 
-These results cover only Person 1's two baselines. The team still needs at least three additional model experiments, Bayesian optimisation, and the classifier-versus-HMM comparison before selecting a final model.
+These results cover Person 1's two baselines. The team later completed the additional LightGBM, XGBoost, and MLP experiments, Bayesian optimisation, HMM/Viterbi comparison, and API/UI integration. The consolidated comparison and final route-decoding results are in `PERSON2_RESULTS.md`, `person3_route_decoding_ui/README.md`, and the submitted technical report.
